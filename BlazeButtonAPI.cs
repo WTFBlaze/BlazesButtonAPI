@@ -47,7 +47,7 @@ namespace Blaze.API.QM
             button.GetComponent<RectTransform>().anchoredPosition += Vector2.down * (210 * (buttonYLoc + initShift[1]));
 
             btnTag = "(" + buttonXLoc + "," + buttonYLoc + ")";
-            button.GetComponent<Button>().name = $"{BlazesAPI.Identifier}-{btnType}{btnTag}";
+            button.GetComponent<Button>().name = $"{BlazesAPI.Identifier}-{btnType}{btnTag}-{RandomNumb}";
         }
 
         public void SetToolTip(string buttonToolTip)
