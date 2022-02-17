@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using VRC.UI.Elements;
+using VRC.UI.Elements.Controls;
 using VRC.UI.Elements.Menus;
 
 namespace Blaze.API.QM
@@ -450,6 +451,7 @@ namespace Blaze.API.QM
     {
         private static VRC.UI.Elements.QuickMenu QuickMenuInstance;
         private static GameObject SingleButtonReference;
+        private static GameObject TabButtonReference;
         private static GameObject MenuPageReference;
         private static Sprite OnIconReference;
         private static Sprite OffIconReference;
@@ -485,6 +487,15 @@ namespace Blaze.API.QM
                 MenuPageReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/QMParent/Menu_Dashboard").gameObject;
             }
             return MenuPageReference;
+        }
+
+        public static GameObject GetTabButtonTemplate()
+        {
+            if (TabButtonReference == null)
+            {
+                TabButtonReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/Page_Buttons_QM/HorizontalLayoutGroup/Page_Settings").gameObject;
+            }
+            return TabButtonReference;
         }
 
         public static Sprite GetOnIconSprite()
