@@ -10,17 +10,18 @@ using VRC.UI.Elements.Menus;
 
 namespace Blaze.API.QM
 {
-    internal class BlazesAPI
+    public class BlazesAPI
     {
         // Change this so your buttons and menus don't overlap with other mods / clients
-        internal const string Identifier = "WTFBlaze";
+        public const string Identifier = "WTFBlaze";
 
-        internal static List<QMSingleButton> allQMSingleButtons = new List<QMSingleButton>();
-        internal static List<QMNestedButton> allQMNestedButtons = new List<QMNestedButton>();
-        internal static List<QMToggleButton> allQMToggleButtons = new List<QMToggleButton>();
+        public static List<QMSingleButton> allQMSingleButtons = new List<QMSingleButton>();
+        public static List<QMNestedButton> allQMNestedButtons = new List<QMNestedButton>();
+        public static List<QMToggleButton> allQMToggleButtons = new List<QMToggleButton>();
+        public static List<QMTabButton> allQMTabButtons = new List<QMTabButton>();
     }
 
-    internal class QMButtonBase
+    public class QMButtonBase
     {
         protected GameObject button;
         protected string btnQMLoc;
@@ -65,10 +66,10 @@ namespace Blaze.API.QM
             catch { }
         }
 
-        internal virtual void SetTextColor(Color buttonTextColor, bool save = true) { }
+        public virtual void SetTextColor(Color buttonTextColor, bool save = true) { }
     }
 
-    internal class QMSingleButton : QMButtonBase
+    public class QMSingleButton : QMButtonBase
     {
         public QMSingleButton(QMNestedButton btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, Color? btnTextColor = null, bool halfBtn = false)
         {
@@ -150,7 +151,7 @@ namespace Blaze.API.QM
             button.GetComponent<Button>().onClick.Invoke();
         }
 
-        internal override void SetTextColor(Color buttonTextColor, bool save = true)
+        public override void SetTextColor(Color buttonTextColor, bool save = true)
         {
             button.GetComponentInChildren<TMPro.TextMeshProUGUI>().SetOutlineColor(buttonTextColor);
             if (save)
@@ -158,7 +159,7 @@ namespace Blaze.API.QM
         }
     }
 
-    internal class QMToggleButton : QMButtonBase
+    public class QMToggleButton : QMButtonBase
     {
         protected TextMeshProUGUI btnTextComp;
         protected Button btnComp;
@@ -269,7 +270,7 @@ namespace Blaze.API.QM
         }
     }
 
-    internal class QMNestedButton
+    public class QMNestedButton
     {
         protected string btnQMLoc;
         protected GameObject MenuObject;
@@ -378,7 +379,74 @@ namespace Blaze.API.QM
         }
     }
 
-    internal static class APIStuff
+    public class QMTabButton
+    {
+        protected GameObject button;
+        protected GameObject badge;
+        protected TextMeshProUGUI badgeText;
+
+        public QMTabButton(Action btnAction, string toolTipText, Sprite img = null)
+        {
+            Initialize(btnAction, toolTipText, img);
+        }
+
+        private void Initialize(Action btnAction, string toolTipText, Sprite img = null)
+        {
+            button = UnityEngine.Object.Instantiate(APIStuff.GetTabButtonTemplate(), APIStuff.GetTabButtonTemplate().transform.parent);
+            button.name = $"{BlazesAPI.Identifier}-{APIStuff.RandomNumbers()}";
+            UnityEngine.Object.Destroy(button.GetComponent<MenuTab>());
+            badge = button.transform.GetChild(0).gameObject;
+            badgeText = badge.GetComponentInChildren<TextMeshProUGUI>();
+
+            SetAction(btnAction);
+            SetToolTip(toolTipText);
+            if (img != null)
+            {
+                SetImage(img);
+            }
+            BlazesAPI.allQMTabButtons.Add(this);
+        }
+
+        public void SetImage(Sprite newImg)
+        {
+            button.transform.Find("Icon").GetComponent<Image>().sprite = newImg;
+            button.transform.Find("Icon").GetComponent<Image>().overrideSprite = newImg;
+            button.transform.Find("Icon").GetComponent<Image>().color = Color.white;
+        }
+
+        public void SetToolTip(string newText)
+        {
+            button.GetComponent<VRC.UI.Elements.Tooltips.UiTooltip>().field_Public_String_0 = newText;
+        }
+
+        public void SetIndex(int newPosition)
+        {
+            button.transform.SetSiblingIndex(newPosition);
+        }
+
+        public void SetAction(Action newAction)
+        {
+            button.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
+            button.GetComponent<Button>().onClick.AddListener(newAction);
+        }
+
+        public void SetActive(bool newState)
+        {
+            button.SetActive(newState);
+        }
+
+        public void SetBadge(bool showing = true, string text = "")
+        {
+            if (badge == null || badgeText == null)
+            {
+                return;
+            }
+            badge.SetActive(showing);
+            badgeText.text = text;
+        }
+    }
+
+    public static class APIStuff
     {
         private static VRC.UI.Elements.QuickMenu QuickMenuInstance;
         private static GameObject SingleButtonReference;
@@ -387,14 +455,14 @@ namespace Blaze.API.QM
         private static Sprite OffIconReference;
         private static System.Random rnd = new System.Random();
 
-        internal static VRC.UI.Elements.QuickMenu GetQuickMenuInstance()
+        public static VRC.UI.Elements.QuickMenu GetQuickMenuInstance()
         {
             if (QuickMenuInstance == null)
                 QuickMenuInstance = Resources.FindObjectsOfTypeAll<VRC.UI.Elements.QuickMenu>()[0];
             return QuickMenuInstance;
         }
 
-        internal static GameObject SingleButtonTemplate()
+        public static GameObject SingleButtonTemplate()
         {
             if (SingleButtonReference == null)
             {
@@ -410,7 +478,7 @@ namespace Blaze.API.QM
             return SingleButtonReference;
         }
 
-        internal static GameObject GetMenuPageTemplate()
+        public static GameObject GetMenuPageTemplate()
         {
             if (MenuPageReference == null)
             {
@@ -437,17 +505,17 @@ namespace Blaze.API.QM
             return OffIconReference;
         }
 
-        internal static int RandomNumbers()
+        public static int RandomNumbers()
         {
             return rnd.Next(10000, 99999);
         }
 
-        internal static void DestroyChildren(this Transform transform)
+        public static void DestroyChildren(this Transform transform)
         {
             transform.DestroyChildren(null);
         }
 
-        internal static void DestroyChildren(this Transform transform, Func<Transform, bool> exclude)
+        public static void DestroyChildren(this Transform transform, Func<Transform, bool> exclude)
         {
             for (var i = transform.childCount - 1; i >= 0; i--)
             {
