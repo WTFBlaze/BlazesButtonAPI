@@ -32,6 +32,12 @@ var defaultStateToggle = new QMToggleButton(menu, 3, 0, "UwU Toggle", delegate
 {
   Console.WriteLine("UwU Toggle: Off!");
 }, "Click to toggle the UwU button!", true);
+
+// Tab Buttons
+var qmTabButton = new QMTabButton(delegate
+{
+  menu.OpenMe();
+}, "Click me to do something!", btnIconVariable);
 ```
 
 [Click me to go to Dubya's Github! (The creator of the old RubyButtonAPI)](https://github.com/DubyaDude)
