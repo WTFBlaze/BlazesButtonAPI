@@ -2,9 +2,10 @@
 A VRChat Button API Inspired by the old RubyButtonAPI Formatting
 
 # A NOTE BEFORE USAGE!
-I am **__NOT__** offering any support on this. You can figure it out on your own. I will not be adding anything to this either. This is just to be put out there because I know there are some people who could use this considering how popular Ruby's Button API was on the old ui.
 
-You are free to use this button api in your projects as long as you throw my name (WTFBlaze) in the credits of your client / mod / project.
+I am **__NOT__** offering any support on this. You can figure it out on your own. I will not be adding anything to this either this is just out there because I know some people could use this considering how popular Ruby's Button API was on the old UI.
+You are free to use this button API in your projects as long as you throw my name (WTFBlaze) in the credits of your client, mod, project. 
+   
 
 # Usage Examples
 
