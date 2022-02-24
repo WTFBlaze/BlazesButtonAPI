@@ -304,7 +304,7 @@ namespace Blaze.API.QM
             MenuPage = MenuObject.AddComponent<UIPage>();
             MenuPage.field_Public_String_0 = MenuName;
             MenuPage.field_Private_Boolean_1 = true;
-            MenuPage.field_Private_MenuStateController_0 = APIStuff.GetQuickMenuInstance().prop_MenuStateController_0;
+            MenuPage.field_Protected_MenuStateController_0 = APIStuff.GetQuickMenuInstance().prop_MenuStateController_0;
             MenuPage.field_Private_List_1_UIPage_0 = new Il2CppSystem.Collections.Generic.List<UIPage>();
             MenuPage.field_Private_List_1_UIPage_0.Add(MenuPage);
             APIStuff.GetQuickMenuInstance().prop_MenuStateController_0.field_Private_Dictionary_2_String_UIPage_0.Add(MenuName, MenuPage);
