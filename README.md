@@ -10,7 +10,7 @@ You are free to use this button API in your projects as long as you throw my nam
 # Usage Examples
 
 ```cs
-var menu = new QMNestedButton("Menu_Dashboard", "Blaze's Client", 1, 3, "Blaze's Client created by WTFBlaze!", "Blaze's Client");
+var menu = new QMNestedButton("Menu_Dashboard", 1, 3, "Blaze's Client", "Blaze's Client created by WTFBlaze!", "Blaze's Client");
 
 var singleButton = new QMSingleButton(menu, 1, 0, "OwO", delegate
 {
