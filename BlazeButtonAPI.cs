@@ -282,13 +282,13 @@ namespace Blaze.API.QM
         protected QMSingleButton MainButton;
         protected string MenuName;
 
-        public QMNestedButton(QMNestedButton location, string btnText, float posX, float posY, string toolTipText, string menuTitle)
+        public QMNestedButton(QMNestedButton location, float posX, float posY, string btnText, string toolTipText, string menuTitle)
         {
             btnQMLoc = location.GetMenuName();
             Initialize(false, btnText, posX, posY, toolTipText, menuTitle);
         }
 
-        public QMNestedButton(string location, string btnText, float posX, float posY, string toolTipText, string menuTitle)
+        public QMNestedButton(string location, float posX, float posY, string btnText, string toolTipText, string menuTitle)
         {
             btnQMLoc = location;
             Initialize(location.StartsWith("Menu_"), btnText, posX, posY, toolTipText, menuTitle);
