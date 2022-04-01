@@ -5,11 +5,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using VRC.UI.Elements;
+using VRC.UI.Core.Styles;
 
 /*
     ===============================
-    Designed for VRChat Build: 1172
+    Designed for VRChat Build: 1173
     ===============================
  
     Change these whenever VRChat Updates the obfuscation settings
@@ -22,18 +22,20 @@ using UiTooltip = MonoBehaviourPublicIPointerEnterHandlerIEventSystemHandlerIPoi
 using UIPage = MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique;
 using LaunchPadQMMenu = MonoBehaviour1PublicBuGaBuGaBuBuBuBuBuUnique;
 using MenuTab = MonoBehaviourPublicStInObObUnique;
+using MenuStateController = MonoBehaviourPublicObTrBoDiOb2StInObObUnique;
 
-namespace Blaze.API.QM
+namespace WTFBlaze
 {
-    public class BlazesAPI
+    public class BlazesButtonAPI
     {
-        // Change this so your buttons and menus don't overlap with other mods / clients
+        // Replace this with whatever you want. This is to prevent your buttons from overlapping with other mods buttons
         public const string Identifier = "WTFBlaze";
 
         public static List<QMSingleButton> allQMSingleButtons = new List<QMSingleButton>();
         public static List<QMNestedButton> allQMNestedButtons = new List<QMNestedButton>();
         public static List<QMToggleButton> allQMToggleButtons = new List<QMToggleButton>();
-        public static List<QMTabButton> allQMTabButtons = new List<QMTabButton>();
+        public static List<QMTabMenu> allQMTabMenus = new List<QMTabMenu>();
+        public static List<QMSlider> allQMSliders = new List<QMSlider>();
     }
 
     public class QMButtonBase
@@ -63,7 +65,8 @@ namespace Blaze.API.QM
             button.GetComponent<RectTransform>().anchoredPosition += Vector2.down * (210 * (buttonYLoc + initShift[1]));
 
             btnTag = "(" + buttonXLoc + "," + buttonYLoc + ")";
-            button.GetComponent<Button>().name = $"{BlazesAPI.Identifier}-{btnType}{btnTag}-{RandomNumb}";
+            button.name = btnQMLoc + "/" + btnType + btnTag;
+            button.GetComponent<Button>().name = $"{BlazesButtonAPI.Identifier}-{btnType}{btnTag}";
         }
 
         public void SetToolTip(string buttonToolTip)
@@ -80,35 +83,34 @@ namespace Blaze.API.QM
             }
             catch { }
         }
-
-        public virtual void SetTextColor(Color buttonTextColor, bool save = true) { }
     }
 
     public class QMSingleButton : QMButtonBase
     {
-        public QMSingleButton(QMNestedButton btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, Color? btnTextColor = null, bool halfBtn = false)
+        public QMSingleButton(QMNestedButton btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, bool halfBtn = false)
         {
             btnQMLoc = btnMenu.GetMenuName();
             if (halfBtn)
             {
                 btnYLocation -= 0.21f;
             }
-            InitButton(btnXLocation, btnYLocation, btnText, btnAction, btnToolTip, btnTextColor);
+            InitButton(btnXLocation, btnYLocation, btnText, btnAction, btnToolTip);
             if (halfBtn)
             {
+                // 2.0175f
                 button.GetComponentInChildren<RectTransform>().sizeDelta /= new Vector2(1f, 2f);
                 button.GetComponentInChildren<TMPro.TextMeshProUGUI>().rectTransform.anchoredPosition = new Vector2(0, 22);
             }
         }
 
-        public QMSingleButton(string btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, Color? btnTextColor = null, bool halfBtn = false)
+        public QMSingleButton(string btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, bool halfBtn = false)
         {
             btnQMLoc = btnMenu;
             if (halfBtn)
             {
                 btnYLocation -= 0.21f;
             }
-            InitButton(btnXLocation, btnYLocation, btnText, btnAction, btnToolTip, btnTextColor);
+            InitButton(btnXLocation, btnYLocation, btnText, btnAction, btnToolTip);
             if (halfBtn)
             {
                 button.GetComponentInChildren<RectTransform>().sizeDelta /= new Vector2(1f, 2f);
@@ -116,11 +118,26 @@ namespace Blaze.API.QM
             }
         }
 
-        private protected void InitButton(float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, Color? btnTextColor = null)
+        public QMSingleButton(QMTabMenu btnMenu, float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip, bool halfBtn = false)
+        {
+            btnQMLoc = btnMenu.GetMenuName();
+            if (halfBtn)
+            {
+                btnYLocation -= 0.21f;
+            }
+            InitButton(btnXLocation, btnYLocation, btnText, btnAction, btnToolTip);
+            if (halfBtn)
+            {
+                button.GetComponentInChildren<RectTransform>().sizeDelta /= new Vector2(1f, 2f);
+                button.GetComponentInChildren<TMPro.TextMeshProUGUI>().rectTransform.anchoredPosition = new Vector2(0, 22);
+            }
+        }
+
+        private protected void InitButton(float btnXLocation, float btnYLocation, string btnText, Action btnAction, string btnToolTip)
         {
             btnType = "SingleButton";
-            button = UnityEngine.Object.Instantiate(APIStuff.SingleButtonTemplate(), GameObject.Find("UserInterface/Canvas_QuickMenu(Clone)/Container/Window/QMParent/" + btnQMLoc).transform, true);
-            RandomNumb = APIStuff.RandomNumbers();
+            button = UnityEngine.Object.Instantiate(APIUtils.SingleButtonTemplate(), GameObject.Find("UserInterface/Canvas_QuickMenu(Clone)/Container/Window/QMParent/" + btnQMLoc).transform, true);
+            RandomNumb = APIUtils.RandomNumbers();
             button.GetComponentInChildren<TMPro.TextMeshProUGUI>().fontSize = 30;
             button.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 176);
             button.GetComponent<RectTransform>().anchoredPosition = new Vector2(-68, 796);
@@ -133,20 +150,17 @@ namespace Blaze.API.QM
             SetButtonText(btnText);
             SetToolTip(btnToolTip);
             SetAction(btnAction);
-
-            if (btnTextColor != null)
-                SetTextColor((Color)btnTextColor);
-            else
-                OrigText = button.GetComponentInChildren<TMPro.TextMeshProUGUI>().color;
+            OrigText = button.GetComponentInChildren<TMPro.TextMeshProUGUI>().color;
 
             SetActive(true);
-            BlazesAPI.allQMSingleButtons.Add(this);
+            BlazesButtonAPI.allQMSingleButtons.Add(this);
         }
 
         public void SetBackgroundImage(Sprite newImg)
         {
             button.transform.Find("Background").GetComponent<Image>().sprite = newImg;
             button.transform.Find("Background").GetComponent<Image>().overrideSprite = newImg;
+            RefreshButton();
         }
 
         public void SetButtonText(string buttonText)
@@ -161,16 +175,26 @@ namespace Blaze.API.QM
                 button.GetComponent<Button>().onClick.AddListener(UnhollowerRuntimeLib.DelegateSupport.ConvertDelegate<UnityAction>(buttonAction));
         }
 
+        public void SetInteractable(bool newState)
+        {
+            button.GetComponent<Button>().interactable = newState;
+            RefreshButton();
+        }
+
         public void ClickMe()
         {
             button.GetComponent<Button>().onClick.Invoke();
         }
 
-        public override void SetTextColor(Color buttonTextColor, bool save = true)
+        public Image GetBackgroundImage()
         {
-            button.GetComponentInChildren<TMPro.TextMeshProUGUI>().SetOutlineColor(buttonTextColor);
-            if (save)
-                OrigText = buttonTextColor;
+            return button.transform.Find("Background").GetComponent<Image>();
+        }
+
+        private void RefreshButton()
+        {
+            button.SetActive(false);
+            button.SetActive(true);
         }
     }
 
@@ -198,8 +222,8 @@ namespace Blaze.API.QM
         private void Initialize(float btnXLocation, float btnYLocation, string btnText, Action onAction, Action offAction, string btnToolTip, bool defaultState)
         {
             btnType = "ToggleButton";
-            button = UnityEngine.Object.Instantiate(APIStuff.SingleButtonTemplate(), GameObject.Find("UserInterface/Canvas_QuickMenu(Clone)/Container/Window/QMParent/" + btnQMLoc).transform, true);
-            RandomNumb = APIStuff.RandomNumbers();
+            button = UnityEngine.Object.Instantiate(APIUtils.SingleButtonTemplate(), GameObject.Find("UserInterface/Canvas_QuickMenu(Clone)/Container/Window/QMParent/" + btnQMLoc).transform, true);
+            RandomNumb = APIUtils.RandomNumbers();
             button.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 176);
             button.GetComponent<RectTransform>().anchoredPosition = new Vector2(-68, 796);
             btnTextComp = button.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -217,17 +241,17 @@ namespace Blaze.API.QM
             SetActive(true);
 
             currentState = defaultState;
-            var tmpIcon = currentState ? APIStuff.GetOnIconSprite() : APIStuff.GetOffIconSprite();
+            var tmpIcon = currentState ? APIUtils.GetOnIconSprite() : APIUtils.GetOffIconSprite();
             btnImageComp.sprite = tmpIcon;
             btnImageComp.overrideSprite = tmpIcon;
 
-            BlazesAPI.allQMToggleButtons.Add(this);
+            BlazesButtonAPI.allQMToggleButtons.Add(this);
         }
 
         private void HandleClick()
         {
             currentState = !currentState;
-            var stateIcon = currentState ? APIStuff.GetOnIconSprite() : APIStuff.GetOffIconSprite();
+            var stateIcon = currentState ? APIUtils.GetOnIconSprite() : APIUtils.GetOffIconSprite();
             btnImageComp.sprite = stateIcon;
             btnImageComp.overrideSprite = stateIcon;
             if (currentState)
@@ -255,9 +279,10 @@ namespace Blaze.API.QM
         {
             try
             {
-                var newIcon = newState ? APIStuff.GetOnIconSprite() : APIStuff.GetOffIconSprite();
+                var newIcon = newState ? APIUtils.GetOnIconSprite() : APIUtils.GetOffIconSprite();
                 btnImageComp.sprite = newIcon;
                 btnImageComp.overrideSprite = newIcon;
+                currentState = newState;
 
                 if (shouldInvoke)
                 {
@@ -296,38 +321,44 @@ namespace Blaze.API.QM
         protected QMSingleButton MainButton;
         protected string MenuName;
 
-        public QMNestedButton(QMNestedButton location, float posX, float posY, string btnText, string toolTipText, string menuTitle)
+        public QMNestedButton(QMNestedButton location, float posX, float posY, string btnText, string toolTipText, string menuTitle, bool halfButton = false)
         {
             btnQMLoc = location.GetMenuName();
-            Initialize(false, btnText, posX, posY, toolTipText, menuTitle);
+            Initialize(false, btnText, posX, posY, toolTipText, menuTitle, halfButton);
         }
 
-        public QMNestedButton(string location, float posX, float posY, string btnText, string toolTipText, string menuTitle)
+        public QMNestedButton(string location, float posX, float posY, string btnText, string toolTipText, string menuTitle, bool halfButton = false)
         {
             btnQMLoc = location;
-            Initialize(location.StartsWith("Menu_"), btnText, posX, posY, toolTipText, menuTitle);
+            Initialize(location.StartsWith("Menu_"), btnText, posX, posY, toolTipText, menuTitle, halfButton);
         }
 
-        private void Initialize(bool isRoot, string btnText, float btnPosX, float btnPosY, string btnToolTipText, string menuTitle)
+        public QMNestedButton(QMTabMenu location, float posX, float posY, string btnText, string toolTipText, string menuTitle, bool halfButton = false)
         {
-            MenuName = $"{BlazesAPI.Identifier}-Menu-{APIStuff.RandomNumbers()}";
-            MenuObject = UnityEngine.Object.Instantiate(APIStuff.GetMenuPageTemplate(), APIStuff.GetMenuPageTemplate().transform.parent);
+            btnQMLoc = location.GetMenuName();
+            Initialize(false, btnText, posX, posY, toolTipText, menuTitle, halfButton);
+        }
+
+        private void Initialize(bool isRoot, string btnText, float btnPosX, float btnPosY, string btnToolTipText, string menuTitle, bool halfButton)
+        {
+            MenuName = $"{BlazesButtonAPI.Identifier}-Menu-{APIUtils.RandomNumbers()}";
+            MenuObject = UnityEngine.Object.Instantiate(APIUtils.GetMenuPageTemplate(), APIUtils.GetMenuPageTemplate().transform.parent);
             MenuObject.name = MenuName;
             MenuObject.SetActive(false);
             UnityEngine.Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadQMMenu>());
             MenuPage = MenuObject.AddComponent<UIPage>();
             MenuPage.field_Public_String_0 = MenuName;
             MenuPage.field_Private_Boolean_1 = true;
-            MenuPage.field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0 = APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0;
+            MenuPage.field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0 = APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0;
             MenuPage.field_Private_List_1_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0 = new Il2CppSystem.Collections.Generic.List<UIPage>();
             MenuPage.field_Private_List_1_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.Add(MenuPage);
-            APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Private_Dictionary_2_String_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.Add(MenuName, MenuPage);
+            APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Private_Dictionary_2_String_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.Add(MenuName, MenuPage);
 
             if (isRoot)
             {
-                var list = APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.ToList();
+                var list = APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.ToList();
                 list.Add(MenuPage);
-                APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0 = list.ToArray();
+                APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0 = list.ToArray();
             }
             MenuObject.transform.Find("ScrollRect/Viewport/VerticalLayoutGroup").DestroyChildren();
             MenuTitleText = MenuObject.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -342,16 +373,16 @@ namespace Blaze.API.QM
                 {
                     if (btnQMLoc.StartsWith("Menu_"))
                     {
-                        APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_Boolean_0("QuickMenu" + btnQMLoc.Remove(0, 5));
+                        APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_Boolean_0("QuickMenu" + btnQMLoc.Remove(0, 5));
                         return;
                     }
-                    APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_Boolean_0(btnQMLoc);
+                    APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_Boolean_0(btnQMLoc);
                     return;
                 }
                 MenuPage.Method_Protected_Virtual_New_Void_0();
             }));
             MenuObject.transform.GetChild(0).Find("RightItemContainer/Button_QM_Expand").gameObject.SetActive(false);
-            MainButton = new QMSingleButton(btnQMLoc, btnPosX, btnPosY, btnText, OpenMe, btnToolTipText);
+            MainButton = new QMSingleButton(btnQMLoc, btnPosX, btnPosY, btnText, OpenMe, btnToolTipText, halfButton);
 
             for (int i = 0; i < MenuObject.transform.childCount; i++)
             {
@@ -360,12 +391,13 @@ namespace Blaze.API.QM
                     UnityEngine.Object.Destroy(MenuObject.transform.GetChild(i).gameObject);
                 }
             }
-            BlazesAPI.allQMNestedButtons.Add(this);
+            MenuObject.transform.Find("ScrollRect").GetComponent<ScrollRect>().enabled = false;
+            BlazesButtonAPI.allQMNestedButtons.Add(this);
         }
 
         public void OpenMe()
         {
-            APIStuff.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_ObjectPublicStBoAc1ObObUnique_Boolean_0(MenuPage.field_Public_String_0);
+            APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.Method_Public_Void_String_Boolean_0(MenuPage.field_Public_String_0);
         }
 
         public void CloseMe()
@@ -394,83 +426,223 @@ namespace Blaze.API.QM
         }
     }
 
-    public class QMTabButton
+    public class QMTabMenu
     {
-        protected GameObject button;
-        protected GameObject badge;
-        protected TextMeshProUGUI badgeText;
+        protected string btnQMLoc;
+        protected GameObject MenuObject;
+        protected TextMeshProUGUI MenuTitleText;
+        protected UIPage MenuPage;
+        protected GameObject MainButton;
+        protected GameObject BadgeObject;
+        protected TextMeshProUGUI BadgeText;
+        protected MenuTab MenuTabComp;
+        protected string MenuName;
 
-        public QMTabButton(Action btnAction, string toolTipText, Sprite img = null)
+        public QMTabMenu(string toolTipText, string menuTitle, Sprite img = null)
         {
-            Initialize(btnAction, toolTipText, img);
+            Initialize(toolTipText, menuTitle, img);
         }
 
-        private void Initialize(Action btnAction, string toolTipText, Sprite img = null)
+        private void Initialize(string btnToolTipText, string menuTitle, Sprite img = null)
         {
-            button = UnityEngine.Object.Instantiate(APIStuff.GetTabButtonTemplate(), APIStuff.GetTabButtonTemplate().transform.parent);
-            button.name = $"{BlazesAPI.Identifier}-{APIStuff.RandomNumbers()}";
-            UnityEngine.Object.Destroy(button.GetComponent<MenuTab>());
-            badge = button.transform.GetChild(0).gameObject;
-            badgeText = badge.GetComponentInChildren<TextMeshProUGUI>();
+            MenuName = $"{BlazesButtonAPI.Identifier}-Menu-{APIUtils.RandomNumbers()}";
+            MenuObject = UnityEngine.Object.Instantiate(APIUtils.GetMenuPageTemplate(), APIUtils.GetMenuPageTemplate().transform.parent);
+            MenuObject.name = MenuName;
+            MenuObject.SetActive(false);
+            UnityEngine.Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadQMMenu>());
+            MenuPage = MenuObject.AddComponent<UIPage>();
+            MenuPage.field_Public_String_0 = MenuName;
+            MenuPage.field_Private_Boolean_1 = true;
+            MenuPage.field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0 = APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0;
+            MenuPage.field_Private_List_1_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0 = new Il2CppSystem.Collections.Generic.List<UIPage>();
+            MenuPage.field_Private_List_1_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.Add(MenuPage);
+            APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Private_Dictionary_2_String_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.Add(MenuName, MenuPage);
+            var list = APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0.ToList();
+            list.Add(MenuPage);
+            APIUtils.GetQuickMenuInstance().field_Protected_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0.field_Public_ArrayOf_MonoBehaviourPublicStBoLiBo1ObSiObEaSeUnique_0 = list.ToArray();
+            MenuObject.transform.Find("ScrollRect/Viewport/VerticalLayoutGroup").DestroyChildren();
+            MenuTitleText = MenuObject.GetComponentInChildren<TextMeshProUGUI>(true);
+            MenuTitleText.text = menuTitle;
+            MenuObject.transform.GetChild(0).Find("RightItemContainer/Button_QM_Expand").gameObject.SetActive(false);
 
-            SetAction(btnAction);
-            SetToolTip(toolTipText);
+            for (int i = 0; i < MenuObject.transform.childCount; i++)
+            {
+                if (MenuObject.transform.GetChild(i).name != "Header_H1" && MenuObject.transform.GetChild(i).name != "ScrollRect")
+                {
+                    UnityEngine.Object.Destroy(MenuObject.transform.GetChild(i).gameObject);
+                }
+            }
+            MenuObject.transform.Find("ScrollRect").GetComponent<ScrollRect>().enabled = false;
+
+            MainButton = UnityEngine.Object.Instantiate(APIUtils.GetTabButtonTemplate(), APIUtils.GetTabButtonTemplate().transform.parent);
+            MainButton.name = $"{BlazesButtonAPI.Identifier}-{APIUtils.RandomNumbers()}";
+            MenuTabComp = MainButton.GetComponent<MenuTab>();
+            MenuTabComp.field_Private_MonoBehaviourPublicObTrBoDiOb2StInObObUnique_0 = APIUtils.GetMenuStateControllerInstance();
+            MenuTabComp.field_Public_String_0 = MenuName;
+            MenuTabComp.GetComponent<StyleElement>().field_Private_Selectable_0 = MenuTabComp.GetComponent<Button>();
+            BadgeObject = MainButton.transform.GetChild(0).gameObject;
+            BadgeText = BadgeObject.GetComponentInChildren<TextMeshProUGUI>();
+            MainButton.GetComponent<Button>().onClick.AddListener(new Action(() =>
+            {
+                MenuTabComp.GetComponent<StyleElement>().field_Private_Selectable_0 = MenuTabComp.GetComponent<Button>();
+            }));
+
+            SetToolTip(btnToolTipText);
             if (img != null)
             {
                 SetImage(img);
             }
-            BlazesAPI.allQMTabButtons.Add(this);
         }
 
         public void SetImage(Sprite newImg)
         {
-            button.transform.Find("Icon").GetComponent<Image>().sprite = newImg;
-            button.transform.Find("Icon").GetComponent<Image>().overrideSprite = newImg;
-            button.transform.Find("Icon").GetComponent<Image>().color = Color.white;
+            MainButton.transform.Find("Icon").GetComponent<Image>().sprite = newImg;
+            MainButton.transform.Find("Icon").GetComponent<Image>().overrideSprite = newImg;
+            MainButton.transform.Find("Icon").GetComponent<Image>().color = Color.white;
+            MainButton.transform.Find("Icon").GetComponent<Image>().m_Color = Color.white;
         }
 
         public void SetToolTip(string newText)
         {
-            button.GetComponent<UiTooltip>().field_Public_String_0 = newText;
+            MainButton.GetComponent<UiTooltip>().field_Public_String_0 = newText;
         }
 
         public void SetIndex(int newPosition)
         {
-            button.transform.SetSiblingIndex(newPosition);
-        }
-
-        public void SetAction(Action newAction)
-        {
-            button.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
-            button.GetComponent<Button>().onClick.AddListener(newAction);
+            MainButton.transform.SetSiblingIndex(newPosition);
         }
 
         public void SetActive(bool newState)
         {
-            button.SetActive(newState);
+            MainButton.SetActive(newState);
         }
 
         public void SetBadge(bool showing = true, string text = "")
         {
-            if (badge == null || badgeText == null)
+            if (BadgeObject == null || BadgeText == null)
             {
                 return;
             }
-            badge.SetActive(showing);
-            badgeText.text = text;
+            BadgeObject.SetActive(showing);
+            BadgeText.text = text;
+        }
+
+        public string GetMenuName()
+        {
+            return MenuName;
+        }
+
+        public GameObject GetMenuObject()
+        {
+            return MenuObject;
+        }
+
+        public GameObject GetMainButton()
+        {
+            return MainButton;
         }
     }
 
-    public static class APIStuff
+    public class QMSlider
     {
+        protected GameObject slider;
+        protected GameObject label;
+        protected Slider sliderComp;
+        protected Text text;
+
+        public QMSlider(QMNestedButton location, float posX, float posY, string sliderLabel, float minValue, float maxValue, float defaultValue, Action<float> sliderAction, Color? labelColor = null)
+        {
+            Initialize(location.GetMenuObject().transform, posX, posY, sliderLabel, minValue, maxValue, defaultValue, sliderAction, labelColor);
+        }
+
+        public QMSlider(QMTabMenu location, float posX, float posY, string sliderLabel, float minValue, float maxValue, float defaultValue, Action<float> sliderAction, Color? labelColor = null)
+        {
+            Initialize(location.GetMenuObject().transform, posX, posY, sliderLabel, minValue, maxValue, defaultValue, sliderAction, labelColor);
+        }
+
+        public QMSlider(Transform location, float posX, float posY, string sliderLabel, float minValue, float maxValue, float defaultValue, Action<float> sliderAction, Color? labelColor = null)
+        {
+            Initialize(location, posX, posY, sliderLabel, minValue, maxValue, defaultValue, sliderAction, labelColor);
+        }
+
+        private void Initialize(Transform location, float posX, float posY, string sliderLabel, float minValue, float maxValue, float defaultValue, Action<float> sliderAction, Color? labelColor = null)
+        {
+            slider = UnityEngine.Object.Instantiate(APIUtils.GetSliderTemplate(), location);
+            slider.transform.localScale = new Vector3(1, 1, 1);
+            slider.name = $"{BlazesButtonAPI.Identifier}-QMSlider-{APIUtils.RandomNumbers()}";
+
+            label = UnityEngine.Object.Instantiate(GameObject.Find("UserInterface/MenuContent/Screens/Settings/AudioDevicePanel/LevelText"), slider.transform);
+            label.name = "QMSlider-Label";
+            label.transform.localScale = new Vector3(1, 1, 1);
+            label.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 50);
+            label.GetComponent<RectTransform>().anchoredPosition = new Vector2(10.4f, 55);
+            sliderComp = slider.GetComponent<Slider>();
+            sliderComp.wholeNumbers = true;
+            sliderComp.onValueChanged = new Slider.SliderEvent();
+            sliderComp.onValueChanged.AddListener(sliderAction);
+            sliderComp.onValueChanged.AddListener(new Action<float>(delegate (float f)
+            {
+                slider.transform.Find("Fill Area/Label").GetComponent<Text>().text = $"{sliderComp.value / maxValue * 100}%";
+            }));
+
+            text = label.GetComponent<Text>();
+            text.resizeTextForBestFit = false;
+            if (labelColor != null) SetLabelColor((Color)labelColor);
+
+            SetLocation(new Vector2(posX, posY));
+            SetLabelText(sliderLabel);
+            SetValue(minValue, maxValue, defaultValue);
+
+            BlazesButtonAPI.allQMSliders.Add(this);
+        }
+
+        public void SetLocation(Vector2 location)
+        {
+            slider.GetComponent<RectTransform>().anchoredPosition = location;
+        }
+
+        public void SetLabelText(string label)
+        {
+            text.text = label;
+        }
+
+        public void SetLabelColor(Color color)
+        {
+            text.color = color;
+        }
+
+        public void SetValue(float min, float max, float current)
+        {
+            sliderComp.minValue = min;
+            sliderComp.maxValue = max;
+            sliderComp.value = current;
+        }
+
+        public GameObject GetGameObject()
+        {
+            return slider;
+        }
+    }
+
+    public static class APIUtils
+    {
+        // Used to make sure that the random number generation per created api item has a new number
+        private static readonly System.Random rnd = new System.Random();
+
+        // Cached Instances
         private static QuickMenu QuickMenuInstance;
+        private static MenuStateController MenuStateControllerInstance;
+
+        // Cached Objects to easily call to at any moment needed to
         private static GameObject SingleButtonReference;
         private static GameObject TabButtonReference;
         private static GameObject MenuPageReference;
+        private static GameObject SliderReference;
+        private static GameObject SliderLabelReference;
         private static Sprite OnIconReference;
         private static Sprite OffIconReference;
-        private static System.Random rnd = new System.Random();
 
+        // Instance Methods
         public static QuickMenu GetQuickMenuInstance()
         {
             if (QuickMenuInstance == null)
@@ -478,11 +650,21 @@ namespace Blaze.API.QM
             return QuickMenuInstance;
         }
 
+        public static MenuStateController GetMenuStateControllerInstance()
+        {
+            if (MenuStateControllerInstance == null)
+            {
+                MenuStateControllerInstance = GetQuickMenuInstance().GetComponent<MenuStateController>();
+            }
+            return MenuStateControllerInstance;
+        }
+
+        // Template Methods
         public static GameObject SingleButtonTemplate()
         {
             if (SingleButtonReference == null)
             {
-                var Buttons = GetQuickMenuInstance().GetComponentsInChildren<Button>(true);
+                var Buttons = GetQuickMenuInstance().GetComponentsInChildren<UnityEngine.UI.Button>(true);
                 foreach (var button in Buttons)
                 {
                     if (button.name == "Button_Screenshot")
@@ -512,11 +694,30 @@ namespace Blaze.API.QM
             return TabButtonReference;
         }
 
+        public static GameObject GetSliderTemplate()
+        {
+            if (SliderReference == null)
+            {
+                SliderReference = GameObject.Find("UserInterface").transform.Find("MenuContent/Screens/Settings/AudioDevicePanel/VolumeSlider").gameObject;
+            }
+            return SliderReference;
+        }
+
+        public static GameObject GetSliderLabelTemplate()
+        {
+            if (SliderLabelReference == null)
+            {
+                SliderLabelReference = GameObject.Find("UserInterface").transform.Find("MenuContent/Screens/Settings/AudioDevicePanel/LevelText").gameObject;
+            }
+            return SliderLabelReference;
+        }
+
+        // Icon Sprite Methods
         public static Sprite GetOnIconSprite()
         {
             if (OnIconReference == null)
             {
-                OnIconReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/QMParent/Menu_Notifications/Panel_NoNotifications_Message/Icon").GetComponent<Image>().sprite;
+                OnIconReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/QMParent/Menu_Notifications/Panel_NoNotifications_Message/Icon").GetComponent<UnityEngine.UI.Image>().sprite;
             }
             return OnIconReference;
         }
@@ -525,14 +726,15 @@ namespace Blaze.API.QM
         {
             if (OffIconReference == null)
             {
-                OffIconReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/QMParent/Menu_Settings/Panel_QM_ScrollRect/Viewport/VerticalLayoutGroup/Buttons_UI_Elements_Row_1/Button_ToggleQMInfo/Icon_Off").GetComponent<Image>().sprite;
+                OffIconReference = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)/Container/Window/QMParent/Menu_Settings/Panel_QM_ScrollRect/Viewport/VerticalLayoutGroup/Buttons_UI_Elements_Row_1/Button_ToggleQMInfo/Icon_Off").GetComponent<UnityEngine.UI.Image>().sprite;
             }
             return OffIconReference;
         }
 
+        // Other Functions
         public static int RandomNumbers()
         {
-            return rnd.Next(10000, 99999);
+            return rnd.Next(100000, 999999);
         }
 
         public static void DestroyChildren(this Transform transform)

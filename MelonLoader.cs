@@ -16,10 +16,6 @@ using VRC.UI.Elements.Menus;
     ===============================
     Designed for VRChat Build: 1173
     ===============================
- 
-    Change these whenever VRChat Updates the obfuscation settings
-    I will attempt to keep these updated when I can but I can't promise shit lol
-    I also cannot be bothered sometimes so fuck off
 */
 
 namespace WTFBlaze
