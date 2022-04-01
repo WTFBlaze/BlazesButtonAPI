@@ -10,7 +10,7 @@ You are free to use this button API in your projects as long as you throw my nam
 # Usage Examples
 
 **__READ ME!__**
-Parameter items surrounded by [] are optional!
+Parameter items surrounded by [ ] are optional!
 
 ```cs
 // QMNestedMenu
@@ -46,7 +46,7 @@ new QMSlider(tabMenu, -510, -740, "Sexy Ass Slider", 0.1f, 55, 25, delegate (flo
 });
 ```
 
-# Exta Functions
+# Extra Functions
 
 Not only can you easily create buttons and menus but when you create these items with a variable attached you can modify them after they are created!
 
