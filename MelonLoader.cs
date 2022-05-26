@@ -367,10 +367,10 @@ namespace WTFBlaze
                 {
                     if (btnQMLoc.StartsWith("Menu_"))
                     {
-                        APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_Boolean_0("QuickMenu" + btnQMLoc.Remove(0, 5));
+                        APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_Boolean_Boolean_0("QuickMenu" + btnQMLoc.Remove(0, 5));
                         return;
                     }
-                    APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_Boolean_0(btnQMLoc);
+                    APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_Boolean_Boolean_0(btnQMLoc);
                     return;
                 }
                 MenuPage.Method_Protected_Virtual_New_Void_0();
@@ -391,7 +391,7 @@ namespace WTFBlaze
 
         public void OpenMe()
         {
-            APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_UIContext_Boolean_0(MenuPage.field_Public_String_0);
+            APIUtils.GetQuickMenuInstance().prop_MenuStateController_0.Method_Public_Void_String_UIContext_Boolean_TransitionType_0(MenuPage.field_Public_String_0);
         }
 
         public void CloseMe()
