@@ -20,6 +20,12 @@ namespace ApolloCore.API.QM
             Initialize(false, btnText, posX, posY, toolTipText, menuTitle, halfButton);
         }
 
+        public QMNestedButton(QMNestedButton location, float posX, float posY, string btnText, string toolTipText, string menuTitle, bool halfButton = false)
+        {
+            btnQMLoc = location.GetMenuName();
+            Initialize(false, btnText, posX, posY, toolTipText, menuTitle, halfButton);
+        }
+
         private void Initialize(bool isRoot, string btnText, float btnPosX, float btnPosY, string btnToolTipText, string menuTitle, bool halfButton)
         {
             MenuName = $"{APIUtils.Identifier}-Menu-{APIUtils.RandomNumbers()}";
