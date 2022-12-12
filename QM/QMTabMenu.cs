@@ -47,7 +47,7 @@ namespace ApolloCore.API.QM
 
             MainButton = Object.Instantiate(APIUtils.GetQMTabButtonTemplate(), APIUtils.GetQMTabButtonTemplate().transform.parent);
             MainButton.name = MenuName;
-            MenuTabComp = MainButton.GetComponent<MonoBehaviourPublicStInBoGaObObObUnique>();
+            MenuTabComp = MainButton.GetComponent<MenuTab>();
             MenuTabComp.field_Private_MenuStateController_0 = APIUtils.MenuStateControllerInstance;
             MenuTabComp.field_Public_String_0 = MenuName;
             MenuTabComp.GetComponent<StyleElement>().field_Private_Selectable_0 = MenuTabComp.GetComponent<Button>();
@@ -59,10 +59,10 @@ namespace ApolloCore.API.QM
                 MenuTabComp.GetComponent<StyleElement>().field_Private_Selectable_0 = MenuTabComp.GetComponent<Button>();
             }));
 
-            SetToolTip(btnToolTipText);
-            if (img != null)
+            SetToolTip(ToolTipText);
+            if (ButtonImage != null)
             {
-                SetImage(img);
+                SetImage(ButtonImage);
             }
         }
 

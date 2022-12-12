@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\QM"
   ],
-  "SelectedNode": "\\.git",
+  "SelectedNode": "\\QM\\QMTabMenu.cs",
   "PreviewInSolutionExplorer": false
 }
