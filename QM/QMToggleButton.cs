@@ -37,7 +37,7 @@ namespace ApolloCore.API.QM
             button = UnityEngine.Object.Instantiate(APIUtils.GetQMButtonTemplate(), APIUtils.QuickMenuInstance.transform.Find("CanvasGroup/Container/Window/QMParent/" + btnQMLoc).transform, true);
             button.name = $"{APIUtils.Identifier}-Toggle-Button-{APIUtils.RandomNumbers()}";
             button.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 176);
-            button.GetComponent<RectTransform>().anchoredPosition = new Vector2(-68, 796);
+            button.GetComponent<RectTransform>().anchoredPosition = new Vector2(-68, -250);
             btnTextComp = button.GetComponentInChildren<TextMeshProUGUI>(true);
             btnComp = button.GetComponentInChildren<Button>(true);
             btnComp.onClick = new Button.ButtonClickedEvent();
