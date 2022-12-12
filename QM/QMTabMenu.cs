@@ -33,6 +33,7 @@ namespace ApolloCore.API.QM
             MenuPage.field_Protected_MenuStateController_0 = APIUtils.MenuStateControllerInstance;
             MenuPage.field_Private_List_1_UIPage_0 = new Il2CppSystem.Collections.Generic.List<UIPage>();
             MenuPage.field_Private_List_1_UIPage_0.Add(MenuPage);
+            APIUtils.MenuStateControllerInstance.field_Private_Dictionary_2_String_UIPage_0.Add(MenuName, MenuPage);
 
             var tmpList = APIUtils.MenuStateControllerInstance.field_Public_ArrayOf_UIPage_0.ToList();
             tmpList.Add(MenuPage);
