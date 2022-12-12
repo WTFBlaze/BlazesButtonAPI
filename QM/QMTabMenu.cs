@@ -14,7 +14,7 @@ namespace ApolloCore.API.QM
         protected GameObject MainButton;
         protected GameObject BadgeObject;
         protected TextMeshProUGUI BadgeText;
-        protected MonoBehaviourPublicStInBoGaObObObUnique MenuTabComp;
+        protected MenuTab MenuTabComp;
 
         public QMTabMenu(string ToolTipText, string MenuTitle, Sprite ButtonImage = null)
         {
