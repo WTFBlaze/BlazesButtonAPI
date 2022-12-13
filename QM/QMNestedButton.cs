@@ -79,7 +79,7 @@ namespace ApolloCore.API.QM
         public void OpenMe()
         {
             MenuObject.SetActive(true);
-            APIUtils.MenuStateControllerInstance.Method_Public_Void_String_UIContext_Boolean_EnumNPublicSealedvaNoLeRiBoIn6vUnique_0(MenuPage.field_Public_String_0, null, false, EnumNPublicSealedvaNoLeRiBoIn6vUnique.Left);
+            APIUtils.MenuStateControllerInstance.Method_Public_Void_String_UIContext_Boolean_TransitionType_0(MenuPage.field_Public_String_0, null, false, TransitionType.Left);
         }
 
         public void CloseMe()
