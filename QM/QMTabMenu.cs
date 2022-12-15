@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ using VRC.UI.Core.Styles;
 using VRC.UI.Elements;
 using VRC.UI.Elements.Menus;
 using VRC.UI.Elements.Tooltips;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ApolloCore.API.QM
 {
@@ -23,13 +25,14 @@ namespace ApolloCore.API.QM
 
         private void Initialize(string ToolTipText, string MenuTitle, Sprite ButtonImage)
         {
-            MenuName = $"{APIUtils.Identifier}-TabMenu-{ APIUtils.RandomNumbers()}";
+            MenuName = $"{APIUtils.Identifier}-TabMenu-{APIUtils.RandomNumbers()}";
             MenuObject = Object.Instantiate(APIUtils.GetQMMenuTemplate(), APIUtils.GetQMMenuTemplate().transform.parent);
             MenuObject.name = MenuName;
             MenuObject.SetActive(false);
-            Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadMenuQM>());
+            Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadQMMenu>());
             MenuPage = MenuObject.AddComponent<UIPage>();
             MenuPage.field_Public_String_0 = MenuName;
+            MenuPage.field_Private_Boolean_1 = true;
             MenuPage.field_Protected_MenuStateController_0 = APIUtils.MenuStateControllerInstance;
             MenuPage.field_Private_List_1_UIPage_0 = new Il2CppSystem.Collections.Generic.List<UIPage>();
             MenuPage.field_Private_List_1_UIPage_0.Add(MenuPage);
@@ -77,7 +80,7 @@ namespace ApolloCore.API.QM
 
         public void SetToolTip(string newText)
         {
-            MainButton.GetComponent<UiTooltip>().field_Public_String_0 = newText;
+            MainButton.GetComponent<VRC.UI.Elements.Tooltips.UiTooltip>().field_Public_String_0 = newText;
         }
 
         public void SetIndex(int newPosition)

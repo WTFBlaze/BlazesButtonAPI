@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,7 +33,7 @@ namespace ApolloCore.API.QM
             MenuObject = Object.Instantiate(APIUtils.GetQMMenuTemplate(), APIUtils.GetQMMenuTemplate().transform.parent);
             MenuObject.name = MenuName;
             MenuObject.SetActive(false);
-            Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadMenuQM>());
+            Object.DestroyImmediate(MenuObject.GetComponent<LaunchPadQMMenu>());
             MenuPage = MenuObject.AddComponent<UIPage>();
             MenuPage.field_Public_String_0 = MenuName;
             MenuPage.field_Protected_MenuStateController_0 = APIUtils.MenuStateControllerInstance;

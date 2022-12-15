@@ -20,7 +20,7 @@ namespace ApolloCore.API.QM
             button.GetComponent<RectTransform>().anchoredPosition += Vector2.down * (210 * (buttonYLoc + initShift[1]));
         }
 
-        public void SetToolTip(string buttonToolTip) => button.GetComponents<UiTooltip>().ToList().ForEach(x => x.field_Public_String_0 = buttonToolTip);
+        public void SetToolTip(string buttonToolTip) => button.GetComponents<VRC.UI.Elements.Tooltips.UiTooltip>().ToList().ForEach(x => x.field_Public_String_0 = buttonToolTip);
 
         public void DestroyMe()
         {

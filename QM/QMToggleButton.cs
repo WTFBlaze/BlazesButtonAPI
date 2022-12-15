@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ApolloCore.API.QM
 {
@@ -36,6 +37,7 @@ namespace ApolloCore.API.QM
         {
             button = UnityEngine.Object.Instantiate(APIUtils.GetQMButtonTemplate(), APIUtils.QuickMenuInstance.transform.Find("CanvasGroup/Container/Window/QMParent/" + btnQMLoc).transform, true);
             button.name = $"{APIUtils.Identifier}-Toggle-Button-{APIUtils.RandomNumbers()}";
+            button.transform.Find("Badge_MMJump").gameObject.SetActive(false);
             button.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 176);
             button.GetComponent<RectTransform>().anchoredPosition = new Vector2(-68, -250);
             btnTextComp = button.GetComponentInChildren<TextMeshProUGUI>(true);
